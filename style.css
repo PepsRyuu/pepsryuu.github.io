@@ -1,0 +1,164 @@
+body {
+    background-color: #104E8B   ;
+    font-family: Arial, Helvitica, sans-serif;
+    color: white;
+}
+
+#content {
+    max-width: 1024px;
+    margin: 64px auto;
+    position: relative;
+}
+
+#avatar {
+    max-width: 300px;
+    border-radius: 10px;
+}
+
+#bio {
+    text-align: justify;
+}
+
+.contact-entry {
+    padding: 5px 0;
+    max-width: 300px;
+}
+
+.contact-entry > span:first-child {
+    width: 25px;
+    margin-right: 5px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.contact-entry > span:last-child {
+    white-space: nowrap;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 64px;
+    line-height: 64px;
+    margin: 0;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 36px;
+    margin-top: 16px;
+}
+
+p {
+    line-height: 22px;
+}
+
+/* Layout */
+#avatar {
+    position: absolute;
+    left: 0;
+    margin-bottom: 20px;
+}
+
+#contact {
+    position: absolute;
+    left: 0;
+    top: 320px;
+}
+
+#title {
+    position: absolute;
+    left: 330px;
+}
+
+#bio {
+    position: absolute;
+    left: 330px;
+    top: 130px;
+}
+
+@media (max-width: 1064px) {
+    #content {
+        margin: 32px;
+    }
+}
+
+@media (max-width: 836px) {
+    #content {
+        margin: 20px;
+    }
+
+    #avatar {
+        max-width: 220px;
+    }
+
+    #title {
+        left: 250px;
+    }
+
+    h1 {
+        font-size: 48px;
+        line-height: 48px;
+    }
+
+    h2 {
+        font-size: 24px;
+        line-height: 24px;
+    }
+
+    #contact {
+        left: 250px;
+        top: 110px;
+    }
+
+    #bio {
+        left: 0;
+        top: 230px;
+    }
+}
+
+@media (max-width: 629px) {
+    #title {
+        top: 40px;
+    }
+
+    #contact {
+        left: 0;
+        top: 240px;
+    }
+
+    #bio {
+        top: 355px;
+    }
+}
+
+@media (max-width: 530px) {
+    #avatar {
+        max-width: 150px;
+    }
+
+    #title {
+        left: 170px;
+        top: 0;
+    }
+
+    #contact {
+        top: 170px;
+    }
+
+    #bio {
+        top: 285px;
+    }
+}
+
+@media (max-width: 424px) {
+    #avatar, #title, #contact, #bio {
+        position: relative;
+        top: 0;
+        left: 0;
+    }
+}

@@ -2,8 +2,48 @@
 <html>
 <head>
     <title>Paul Sweeney</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>Hello World!</p>
+    <div id="content">
+        <img src="https://avatars2.githubusercontent.com/u/6637882?v=3&s=460" id="avatar">
+        <div id="title">
+            <h1>Paul Sweeney</h1>
+            <h2>Software Engineer</h2>
+        </div>
+        <div id="contact">
+            <div class="contact-entry">
+                <span><img src="images/email.svg"></span>
+                <span><a href=""></a></span>
+            </div>
+            <div class="contact-entry">
+                <span><img src="images/github.svg"></span>
+                <span><a href="http://github.com/PepsRyuu">http://github.com/PepsRyuu</a></span>
+            </div>
+            <div class="contact-entry">
+                <span><img src="images/linkedin.svg"></span>
+                <span><a href="http://linkedin.com/in/PepsRyuu">http://linkedin.com/in/PepsRyuu</a></span>
+            </div>
+        </div>
+        <div id="bio">
+            <p>Hello, my name is Paul and I'm currently working as a Senior Engineer in Ericsson Software Campus in Athlone, Ireland.</p>
+            <p>I'm the lead developer for a large-scale web framework which the company uses internally worldwide for many of its new products. Our team develops from scratch core framework features, widgets, layouts, advanced tables and many more components. I have provided many presentations and workshops educating developers about the framework locally and abroad at multiple Ericsson sites. Our framework is recognised and praised by Ericsson leadership, and I have received multiple awards for my contribution.</p>
+            <p>I graduated from Athlone Institute of Technology in 2012 with an First Class Honours Degree in "BSc in Software Design (Games Development)", along with an award for "Best Student in Software Engineering". Both in the second and third year of my course, I have worked previously with Ericsson as in intern, and started working under a permanent contract after graduating from college. Over the course of two years, I was quickly moved from a trainee engineer position up to Senior Engineer.</p>
+            <p>Because of the nature of my job, I'm highly experienced with web development with advanced knowledge of JavaScript, HTML, and CSS. I'm familiar with other languages and technologies such as PHP, Java, C++, Maven, Git, Bash, MySQL, MongoDB, Continuous Integration, ThreeJS, D3, Backbone, RequireJS, NodeJS, and many more. I am proven to be very adaptive and responsive to any new language or framework. My belief is that the language or technology is not what matters, but whether or not you can quickly evolve with technology and not be left behind. This is critical for my current role, we are always looking ahead and adopting the latest modern capabilities into the framework for our developers to use.</p>
+            <p>I'm a very hard-working person, who enjoys problem solving and working as a team-player with other developers. I'm looking forward to seeking new challenges and opportunities. </p>
+        </div>
+    </div>
+    <script>
+        // Basic Protection from spam bots.
+        // Won't stop bots that execute JS though.
+        var lhs = "paul-sweeney";
+        var rhs = "outlook.ie";
+        var emailAnchor = document.getElementsByTagName("a")[0];
+        emailAnchor.setAttribute("href", "mailto:" + lhs + "@" + rhs);
+        emailAnchor.textContent = lhs + "@" + rhs;;
+    </script>
 </body>
 </html>
