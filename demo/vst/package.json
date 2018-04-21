@@ -1,6 +1,5 @@
 {
     "dependencies": {
-        "lamda": "*",
-        "presenter": "*"
+        "virtual-scrolling-tree": "*"
     }
 }
