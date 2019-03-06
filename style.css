@@ -58,27 +58,21 @@ p {
 }
 
 /* Layout */
+
 #avatar {
     position: absolute;
     left: 0;
     margin-bottom: 20px;
 }
 
+#main {
+    position: absolute;
+    left: 330px;
+    top: 0;
+}
+
 #contact {
-    position: absolute;
-    left: 0;
-    top: 320px;
-}
-
-#title {
-    position: absolute;
-    left: 330px;
-}
-
-#bio {
-    position: absolute;
-    left: 330px;
-    top: 130px;
+    margin: 30px 0;
 }
 
 @media (max-width: 1064px) {
@@ -96,7 +90,7 @@ p {
         max-width: 220px;
     }
 
-    #title {
+    #main {
         left: 250px;
     }
 
@@ -109,56 +103,11 @@ p {
         font-size: 24px;
         line-height: 24px;
     }
-
-    #contact {
-        left: 250px;
-        top: 110px;
-    }
-
-    #bio {
-        left: 0;
-        top: 270px;
-    }
 }
 
-@media (max-width: 629px) {
-    #title {
-        top: 40px;
-    }
-
-    #contact {
+@media (max-width: 670px) {
+    #main {
         left: 0;
-        top: 240px;
-    }
-
-    #bio {
-        top: 400px;
-    }
-}
-
-@media (max-width: 530px) {
-    #avatar {
-        max-width: 150px;
-    }
-
-    #title {
-        left: 170px;
-        top: 0;
-    }
-
-    #contact {
-        top: 170px;
-    }
-
-    #bio {
-        top: 330px;
-    }
-}
-
-@media (max-width: 424px) {
-    #avatar, #title, #contact, #bio {
-        position: relative;
-        top: 0;
-        left: 0;
+        top: 250px;
     }
 }
