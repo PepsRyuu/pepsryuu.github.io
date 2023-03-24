@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Nesting Preprocessor</title>
+    <style>
+        html, body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+        }
+
+        #input, #output {
+            width: 50%;
+            height: 100%;
+            font-family: monospace;
+            white-space: pre-wrap;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #message {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background-color: #0080ff;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 20px;
+
+        }
+    </style>
+</head>
+<body>
+    <textarea id="input">
+.MyRule {
+    background-color: blue;
+    color: red;
+
+    .NestedRule {
+        background-color: red;
+
+        &.SecondNestedRule &{
+            background-color: green;
+        }
+    }
+
+    font-size: 24px;
+}
+
+.parent {
+  .child {
+    .grand-child & {
+      &.sibling {
+        background-color: yellow;
+      }
+    }
+  }
+}
+
+.groupA, .groupB {
+    background-color: red;
+
+    &:active {
+        content: '';
+    }
+}
+    </textarea>
+    <div id="output"></div>
+
+    <div id="message">
+        A random fun experiment which shows how to implement a CSS preprocessor<br>
+        that allows you to nest selectors. Written in less than 60 lines of code.
+    </div>
+
+    <script>
+        input.onkeydown = function (e) {
+            if (e.keyCode === 9) {
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 1;
+                e.preventDefault();
+            }
+        }
+
+        input.onkeyup = function (e) {
+            output.textContent = toCSS(this.value);
+        }
+
+        output.textContent = toCSS(input.value);
+
+        function toCSS(content) {
+            var output = '';
+            var outputStack = [];
+            var bufferIndex = 0;
+            var stack = [];
+
+            [].forEach.call(content, function (char, charIndex) {
+                var backIndex, backChar, selector;
+                var stackTop = stack[stack.length - 1];
+
+                 if (char === '{') {
+                    backIndex = charIndex - 1;
+                    while (true) {
+                        backChar = content[backIndex];
+                        if (['{', '}', ';'].indexOf(backChar) > -1 || backIndex === -1) {
+                            selector = content.slice(backIndex + 1, charIndex).replace(/\r?\n|\r/g, '').trim();
+
+                            if (stack.length > 0) {
+                                stackTop.content += content.slice(bufferIndex, backIndex + 1);
+
+                                selector = selector.indexOf('&') === -1? '& ' + selector : selector;
+                                selector = stackTop.selector.split(',').map(function (part) {
+                                    return selector.replace(/&/g, part.trim());
+                                }).join(', ');
+                            }
+
+                            stack.push({
+                                selector: selector,
+                                content: ''
+                            });
+
+                            bufferIndex = charIndex;
+                            break;
+                        }
+                        backIndex--;
+                    }
+                }
+
+                if (char === '}') {
+                    stackTop.content += content.slice(bufferIndex, charIndex + 1);
+                    outputStack.push(stack.pop());
+                    bufferIndex = charIndex + 1;
+                    
+                    if (stack.length === 0) {
+                        output += outputStack.reverse().filter(function(obj) {
+                            obj.content = obj.content.replace(/\s+/g, ' ').trim();
+                            return obj.content !== '{ }';
+                        }).map(function (obj) {
+                            return obj.selector + ' ' + obj.content;
+                        }).join('\n') + '\n';
+
+                        outputStack = [];
+                    }
+                }
+            });
+
+            return output;
+        }
+    </script>
+</body>
+</html>

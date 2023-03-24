@@ -1,0 +1,1249 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>How to write a bundler</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/css/reveal.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/lib/css/zenburn.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:regular,bold,italic">
+        <style type="text/css">
+            * {
+                font-family: Montserrat;
+                --color-black: rgb(50, 51, 48);
+                --color-yellow: rgb(240, 219, 79);
+                --color-white: rgb(247, 248, 248);
+                text-align: left;
+            }
+
+            pre code *, .hljs {
+                font-family: Courier New !important;
+                padding: 0 !important;
+            }
+
+            figcaption {
+                font-size: 12px !important;
+                margin-top: -16px !important;
+            }
+
+            .reveal pre {
+                min-width: 90%;
+                width: auto;
+            }
+
+            .reveal pre code {
+                max-height: 100%;
+                overflow: visible;
+                font-size: 36px;
+                line-height: 42px;
+            }
+
+            .reveal p code, .reveal li code {
+                font-size: 36px;
+                font-family: Courier New;
+                font-weight: bold;
+                vertical-align: middle;
+            }
+
+            .slides > section {
+                height: 100%;
+                overflow: hidden;
+            }
+        </style>
+        <style type="text/less">
+            li{
+                list-style-type:none;
+                position: relative;
+            }
+
+            li:before{
+                content: '\00b7';
+                font-size: 166px;
+                line-height: 0;
+                overflow: hidden;
+                height: 24px;
+                display: inline-flex;
+                justify-content: flex-start;
+                vertical-align: top;
+                margin-top: 6px;
+                align-items: flex-start;
+                margin-right: 30px;
+            }
+
+            .logo {
+                position: absolute;
+                top: 68px;
+                left: 60px;
+                background-size: 100%;
+                background-repeat: no-repeat;
+                height: 100px;
+                width: 274px;
+
+                &::before {
+                    content: '20th September 2019';
+                    position: absolute;
+                    top: 0;
+                    left: 125px;
+                    font-weight: 700;
+                    font-size: 13px;
+                }
+
+                &::after {
+                    content: 'Dublin, Ireland';
+                    position: absolute;
+                    top: 18px;
+                    left: 145px;
+                    font-weight: 700;
+                    font-size: 13px;
+                }
+            }
+
+            .logoline {
+                display: inline-block;
+                position: absolute;
+                top: 227px;
+                left: 0;
+                width: 252px;
+                height: 9px;
+            }
+
+            .hashtag {
+                position: absolute;
+                top: 84px;
+                right: 88px;
+                font-size: 40px !important;
+                font-weight: bold !important;
+
+                &::before {
+                    content: '#JSDayIE2019';
+                }
+            }
+
+            .body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                font-size: 35px;
+            }
+
+            .dark {
+                background-color: var(--color-black);
+                color: var(--color-white);
+
+                .logo {
+                    background-image: url('./resources/jsday.png');
+                    
+                    &::before, &::after {
+                        color: var(--color-white);
+                    }
+                }
+
+                .logoline {
+                    background-color: var(--color-yellow);
+                }
+
+                .hashtag {
+                    color: var(--color-yellow);
+                }
+
+                .background {
+                    position: absolute;
+                    top: 174px;
+                    right: 0;
+                    bottom: 0;
+                    width: 900px;
+                    height: 116%;
+                    object-fit: cover;
+
+                    img:first-child {
+                        margin-top: 1px;
+                    }
+
+                    img:not(:last-child) {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        width: 864px;
+                        height: 100%;
+                        object-fit: cover;
+                    }  
+
+
+                    img:last-child {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        width: 866px;
+                    }
+                }
+            }
+
+
+            .light {
+                background-color: var(--color-white);
+                color: var(--color-black);
+
+                .logo {
+                    background-image: url('./resources/jsday_light.png');
+                    
+                    &::before, &::after {
+                        color: var(--color-black);
+                    }
+                }
+
+                .logoline {
+                    background-color: var(--color-black);
+                }
+
+                .hashtag {
+                    color: var(--color-black);
+                }
+            }
+
+            .introduction-slide {
+                .title {
+                    background-color: var(--color-yellow);
+                    color: var(--color-black);
+                    margin-bottom: 12px;
+                    margin-top: 420px;
+                    margin-left: 81px;
+                    width: 1242px;
+                    padding: 32px 64px;
+
+                    div:first-child {
+                        font-size: 100px;
+                        font-weight: bold;
+                        margin-bottom: 30px;
+                    }
+
+                    div:last-child {
+                        font-size: 69px;
+                        font-weight: bold;
+                    }
+                }
+
+                .presenter {
+                    background-color: var(--color-yellow);
+                    color: var(--color-black);
+                    margin-left: 81px;
+                    width: 1242px;
+                    padding: 32px 64px;
+                    font-size: 69px;
+                    font-weight: bold;
+                }
+            }
+
+            .presenter-slide {
+                display: flex;
+
+                .profiler {
+                    width: 620px;
+
+                    img {
+                        margin-top: 360px; 
+                        margin-left: 60px; 
+                        width: 500px;
+                        height: 500px; 
+                        border: 10px solid white; 
+                        border-radius: 50%; 
+                        overflow: hidden;
+                    }
+                }
+
+                .description {
+                    width: calc(100% - 620px);
+
+                    h3 {
+                        background-color: var(--color-yellow); 
+                        padding: 40px 70px; 
+                        color: var(--color-black); 
+                        font-size: 69px; 
+                        display: inline-block; 
+                        margin: 350px 0 0 0;
+                        font-weight: bold;
+                    }
+
+                    ul {
+                        font-size: 42px; 
+                        margin: 50px 0 0 20px;
+
+                        li {
+                            margin-bottom: 36px;
+                        }
+
+                    }
+                }
+            }
+
+            .content-slide {
+                margin-left: 70px !important;
+
+                h2 {
+                    margin-top: 330px;
+                    font-size: 76px;
+                    padding: 25px 41px;
+                    color: var(--color-white);
+                    background-color: var(--color-black);
+                    font-weight: 700;
+                    display: inline-block;
+                    text-align: left;
+                    margin-bottom: 60px;
+                }
+
+                ul {
+                    text-align: left; 
+                    margin: 0;
+                    font-size: 42px;
+
+                    li {
+                        margin-bottom: 30px;
+                    }
+                }
+
+                .content-split {
+                    display: flex;
+
+                    > * {
+                        flex: 1;
+                    }
+                }
+            }
+
+            .header-slide {
+                h1 {
+                    background-color: var(--color-yellow);
+                    color: var(--color-black);
+                    margin-bottom: 12px;
+                    margin-top: 506px;
+                    margin-left: 81px;
+                    width: 1383px;
+                    padding: 32px 64px;
+                    font-size: 128px;
+                    font-weight: bold;
+                }
+            }
+
+            b {
+                font-weight: bold !important;
+            }
+
+            pre code {
+                padding: 20px !important;
+                font-family: Courier New !important;
+                font-size: 26px;
+                font-weight: bold !important;
+                display: inline-block !important;
+                color: black !important;
+                background: transparent !important;
+
+                .hljs-keyword, .hljs-built_in, .hljs-string, .hljs-comment, .hljs-number, .hljs-title, .hljs-subst, .hljs-literal {
+                    color: black !important;
+                }
+
+                .hljs-keyword {
+                    color: rgb(41, 34, 254) !important;
+                }
+
+                .hljs-string {
+                    color: rgb(179, 64, 64) !important;
+                }
+
+                .hljs-comment {
+                    color: rgb(10, 131, 3) !important;
+                }
+
+                .hljs-params {
+                    /*color: green !important;*/
+                }
+
+            }
+
+            a, a:visited {
+                color: var(--color-black);
+                font-family: Courier New;
+                text-decoration: none;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="background">
+                        <img src="./resources/bg.jpg" style="left: 100px">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/mask.png">
+                    </div>
+                    <div class="body">
+                        <div class="introduction-slide">
+                            <div class="title">
+                                <div>How to Write a Bundler</div>
+                                <div>Exploring the inner workings</div>
+                            </div>
+                            <div class="presenter">
+                                Presented by Paul Sweeney
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="presenter-slide">
+                            <div class="profiler">
+                                <img src="./resources/profile.jpg">
+                            </div>
+                            <div class="description">
+                                <h3>Paul Sweeney</h3>
+                                <ul>
+                                    <li>Previously, Senior Engineer @ Ericsson</li>
+                                    <li>Software Engineer @ Accenture The Dock</li>
+                                    <li>All opinions are my own</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>What's this talk about?</h2>
+                            <ul>
+                                <li>Bundlers combine and transform files to improve performance</li>
+                                <li>The Big 3: <b>Webpack, Rollup, Parcel</b></li>
+                                <li>For me, not a fan of Webpack config</li>
+                                <li>Parcel's zero-config is unrealistic</li>
+                                <li>Rollup only does <i>production</i> builds - no Hot Module Replacement, slow</li>
+                                <li>I decided to write a Rollup dev bundler</li>
+                                <li>Here's the basics of a bundler</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Anatomy of a Bundle</h2>
+                            <div class="content-split">
+                                <div>
+                                    <div style="font-size: 48px; font-weight: bold; margin-bottom: 34px; text-align: center">Dev</div>
+                                    <ul style="margin-left: 180px">
+                                        <li>Concatenation</li>
+                                        <li>Function Scopes</li>
+                                        <li>Embedded Source Maps</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div style="font-size: 48px; font-weight: bold; margin-bottom: 34px; text-align: center">Prod</div>
+                                    <ul style="margin-left: 180px">
+                                        <li>Tree-Shaking</li>
+                                        <li>Scope Hoisting</li>
+                                        <li>No source maps</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p style="margin-top: 60px; text-align:center; font-size: 46px; font-weight: bold">We'll bundle ES Modules for dev bundles</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>The Plan</h2>
+                            <style>
+                                .boxes {
+                                    margin-top: 100px;
+                                }
+
+                                .boxes > div {
+                                    display: inline-flex;
+                                    width: 330px;
+                                    height: 200px;
+                                    border: 8px solid black;
+                                    position: relative;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 56px;
+                                    background-color: var(--color-yellow);
+                                }
+
+                                .boxes > div:not(:last-child) {
+                                    margin-right: 120px;
+                                }
+
+                                .boxes > div:not(:last-child)::after {
+                                    content: '';
+                                    display: inline-block;
+                                    width: 140px;
+                                    height: 10px;
+                                    background-color: black;
+                                    position: absolute;
+                                    left: 330px;
+                                }
+                            </style>
+                            <div class="boxes">
+                                <div>Load</div>
+                                <div>Transform</div>
+                                <div>Generate</div>
+                                <div>Output</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Dev Bundle</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Quick to generate</li>
+                                        <li>Build modules independently</li>
+                                        <li>HMR library compatible</li>
+                                        <li>Eval for multiple source maps</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -288px; margin-left: -72px;">
+                                        (function (modules) {
+                                           let inst = {};
+                                           let require = function (mod) {
+                                              if (!inst[mod]) {
+                                                 inst[mod] = { exports: {} };
+                                                 modules[mod](require, inst[mod]);
+                                              }
+                                              return inst[mod].exports;
+                                           };
+                                           require('module-1');
+                                        })({
+                                           'module-1': function (require, module) {
+                                              eval(/* code, map */);   
+                                           },
+                                           'module-2': function (require, module) {
+                                              eval(/* code, map */);  
+                                           }    
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Mapping ESM</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>ESM is statically analyzable</li>
+                                        <li>Convert to our internal loader</li>
+                                        <li>Default property for default exports</li>
+                                        <li>Aligns with ESM dynamic import</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div style="margin-top: -420px">
+                                        <p style="font-size: 38px; font-weight: bold; margin: 30px; background-color: var(--color-black); color: white; display: inline-block; padding: 20px 40px">Input</p>
+                                        <script type="code-block" data-lang="javascript" style="line-height: 46px;">
+                                            import MyDefault from './MyModule';
+                                            import { MyNamed } from './OtherModule';
+
+                                            export const PI = 3.14
+                                            export default 'hello world';
+                                        </script>
+                                        <p style="font-size: 38px; font-weight: bold; margin: 30px; background-color: var(--color-black); color: white; display: inline-block; padding: 20px 40px">Output</p>
+                                        <script type="code-block" data-lang="javascript" style="line-height: 46px">
+                                            var _i0 = require('./MyModule'); 
+                                            var MyDefault = _i0.default;
+                                            var _i1 = require('./OtherModule');
+                                            var MyNamed = _i0.MyNamed;
+
+                                            module.exports.PI = 3.14;
+                                            module.exports.default = 'hello world';
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="background">
+                        <img src="./resources/bg2.jpg" style="margin-left: -410px">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/mask.png">
+                    </div>
+                    <div class="body">
+                        <div class="header-slide">
+                            <h1>The Tools</h1>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Abstract Syntax Tree</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Converts source text to a tree</li>
+                                        <li>Nodes have types with child nodes</li>
+                                        <li>Start and end positions in the source</li>
+                                        <li>Traverse AST to convert source</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -284px; margin-left: 60px">
+                                        hello();
+
+                                        {
+                                            type: "ExpressionStatement",
+                                            start: 0,
+                                            end: 8,
+                                            expression: {
+                                                type: "CallExpression",
+                                                start: 0,
+                                                end: 7,
+                                                callee: {
+                                                    type: 'Identifier',
+                                                    start: 0,
+                                                    end: 5,
+                                                    name: "hello"
+                                                }
+                                            }
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Acorn Parser</h2>
+                            <div class="content-split">
+                                <div>
+                                    <script type="code-block" data-lang="javascript">
+                                        let { Parser } = require('acorn');
+                                        let walker = require('acorn-walk');
+
+                                        function sourceToAST (src) {
+                                            return Parser.parse(src, {
+                                                ecmaVersion: 2018,
+                                                sourceType: 'module'
+                                            });
+                                        }
+                                    </script>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -160px; margin-left: -60px">
+                                        let ast = sourceToAST(source);
+
+                                        walker.fullAncestor(ast, (node, ancs) => {
+                                            switch (node.type) {
+                                                case 'ImportDeclaration': 
+                                                    break;
+
+                                                case 'ExportDefaultDeclaration':
+                                                    break;
+
+                                                case 'ExportNamedDeclaration':
+                                                    break;
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Magic String</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Can manipulate AST or the string</li>
+                                        <li>Regex too unreliable</li>
+                                        <li>Magic String tracks changes</li>
+                                        <li>Indexes refer to original string</li>
+                                        <li>Provides source map</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -210px;">
+                                        let MagicString = require('magic-string');
+                                        let s = new MagicString('hello world');
+
+                                        s.overwrite(0, 5, 'foo');
+                                        s.toString(); // 'foo world'
+
+                                        s.overwrite(6, 11, 'bar');
+                                        s.toString(); // 'foo bar'
+
+                                        let map = s.generateMap({ 
+                                            source: 'source.js',
+                                            includeContent: true,
+                                            hires: true 
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="background">
+                        <img src="./resources/bg3.jpg" style="margin-left: -410px">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/mask.png">
+                    </div>
+                    <div class="body">
+                        <div class="header-slide">
+                            <h1>Implementation</h1>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Loading Files</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Start with entry file</li>
+                                        <li>Read in file text</li>
+                                        <li>Transform code</li>
+                                        <li>Create ID for module</li>
+                                        <li>Recursively parse dependencies</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -320px; margin-left: -56px">
+                                        let ctx = {
+                                           modules: {}, 
+                                           entry: getId(input)
+                                        };
+
+                                        function handleFile (ctx, file) {
+                                           let src = fs.readFileSync(file, 'utf8');
+                                           let { deps, code } = transpile(src);
+
+                                           ctx.modules[getId(file)] = { code };
+
+                                           deps.forEach(d => {
+                                              handleFile(ctx, resolvePath(file, d));
+                                           });
+                                        }
+
+                                        handleFile(ctx, input);
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Transforming</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Find ImportDeclaration</li>
+                                        <li>Convert to loader</li>
+                                        <li>Track the dependency</li>
+                                        <li>Convert specifiers</li>
+                                        <li>Overwrite string</li>
+                                        <li>Return deps and code.</li>
+                                        <li>Replace placeholders</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -400px; font-size: 32px; line-height: 38px">
+                                        function transpile (src) {
+                                          let deps = [], s = new MagicString(src);
+
+                                          walker.fullAncestor(sourceToAST(src), node => {
+                                            if (node.type === 'ImportDeclaration') {
+                                              let i = deps.length;
+                                              let out = `var _i${i} = require('_d${i}');`;
+                                              deps.push(node.source.value);
+
+                                              node.specifiers.forEach(sp => {
+                                                if (sp.type === 'ImportDefaultSpecifier') {
+                                                  out += `var ${sp.local.name} = _i${i}.default;`
+                                                }
+                                              });
+
+                                              s.overwrite(node.start, node.end, out);
+                                            }
+                                          });
+                                          return { deps, code: s.toString() };
+                                        }
+
+                                        code = code.replace(`_d${i}`, getId(deps[i]));
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Generate Bundle</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Generate string</li>
+                                        <li>Append require loader</li>
+                                        <li>Require entry file</li>
+                                        <li>Stringify all modules</li>
+                                        <li>Escape quotes/linebreaks</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -370px;  font-size: 32px;  line-height: 38px; margin-left: -100px">
+                                        function generate(ctx) {
+                                          return `
+                                            (function (modules) {
+                                              let inst = {};
+                                              let require = function (mod) {
+                                                if (!inst[mod]) {
+                                                  inst[mod] = { exports: {} };
+                                                  modules[mod](require, inst[mod]);
+                                                }
+                                                return inst[mod].exports;
+                                              };
+                                              require('${ctx.entry}');
+                                            })({
+                                              ${Object.keys(ctx.modules).map(id => `
+                                                '${id}': function (require, module) {
+                                                  eval('${escape(ctx.modules[id].code)}');
+                                                }
+                                              `)}
+                                            })
+                                          `;
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="body" style="position: relative">
+                        <video src="./resources/demo.mp4" style="width:100%; margin-top: -24px"></video>
+                        <a href="https://codesandbox.io/s/how-to-write-a-bundler-jokfw" style="position: absolute; top: 0; right: 0; font-size: 36px; font-weight: bold; background-color: var(--color-white); padding: 10px">https://codesandbox.io/s/how-to-write-a-bundler-jokfw</a>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="background">
+                        <img src="./resources/bg4.jpg" style="margin-left: -325px">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/mask.png">
+                    </div>
+                    <div class="body">
+                        <div class="header-slide">
+                            <h1>Other Issues</h1>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Hot Module<br> Replacement</h2>
+                            <div class="content-split">
+                                <div>
+                                    <ul>
+                                        <li>Modules use function scopes</li>
+                                        <li>Cache modules in memory</li>
+                                        <li>Use file watcher</li>
+                                        <li>Reparse module, send via socket</li>
+                                        <li>Eval module and invalidate</li>
+                                        <li>Find accept callback in parents</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <script type="code-block" data-lang="javascript" style="margin-top: -430px;  font-size: 32px;  line-height: 38px">
+                                        function hmrAcceptCallback (id) {
+                                          if (inst[id]) {
+                                            inst[id].invalidate = true;
+                                            if (inst[id].hot._accept) {
+                                              inst[id].hot._accept();
+                                              return true;
+                                            }
+                                            return invalidateParents(id)
+                                              .some(function (id) {
+                                                return hmrAcceptCallback(id);
+                                              });
+                                          } 
+                                        }
+
+                                        function onWebSocketMessage (e) {
+                                          e.changes.forEach(function (c) {
+                                            if (!c.removed) {
+                                              modules[c.id] = eval('(' + c.code + ')');
+                                              hmrAcceptCallback(c.id);
+                                            }
+                                          });
+                                        };
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>ESM Bindings</h2>
+                            <div class="content-split">
+                                <div>
+                                   <ul>
+                                        <li>Need for circular dependencies</li>
+                                        <li>Update export value dynamically</li>
+                                        <li>Only imports do this, nothing else</li>
+                                        <li>Bundler checks code for changes</li>
+                                        <li>Webpack breaks names</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div style="margin-top: -426px">
+                                        <p style="font-size: 38px; font-weight: bold; margin: 30px; background-color: var(--color-black); color: white; display: inline-block; padding: 20px 40px">Source</p>
+                                        <script type="code-block" data-lang="javascript">
+                                            export const number = 123;
+
+                                            import { number } from './file';
+                                            console.log(number);
+                                        </script>
+                                        <p style="font-size: 38px; font-weight: bold; margin: 30px; background-color: var(--color-black); color: white; display: inline-block; padding: 20px 40px">Webpack Translation</p>
+                                        <script type="code-block" data-lang="javascript" style="font-size: 30px">
+                                            __webpack_require__.r(__webpack_exports__);
+                                            __webpack_require__.d(__webpack_exports__, "number", 
+                                                function() { return number; }
+                                            ); const number = 123;
+
+                                            var _file__WEBPACK_IMPORTED_MODULE_0__ =
+                                                __webpack_require__("./src/file.js");
+                                            console.log(
+                                                _file__WEBPACK_IMPORTED_MODULE_0__["number"]
+                                            );
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>CommonJS</h2>
+                            <div class="content-split">
+                                <div>
+                                   <ul>
+                                        <li>CJS is <b><i><u>not</u></i></b> statically analyzable</li>
+                                        <li>Our bundler requires ESM</li>
+                                        <li>Several ways to write</li>
+                                        <li>Ambiguity with default exports</li>
+                                        <li>Check common patterns</li>
+                                        <li>Libraries should publish as ESM</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div style="margin-top: -300px">
+                                       <script type="code-block" data-lang="javascript" style="margin-bottom: 30px">
+                                            module.exports = {};
+                                            module['exports'] = {};
+                                            module.exports = { __esModule: true };
+
+                                            let me = module.exports;
+                                            me.something = 123;
+
+                                            let mod = require('mod');
+                                            let mod = require('abc' + variable);
+
+                                            let r = require;
+                                            let mod = r('mod');
+                
+                                            // Default, or named?
+                                            module.exports = { X, Y, Z };
+                                            module.exports = Something;
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>NodeJS Conditionals</h2>
+                            <div class="content-split">
+                                <div>
+                                   <ul>
+                                    <li><code>process.env</code> not in browsers</li>
+                                    <li>Check for and replace NodeJS APIs</li>
+                                    <li>Statically check conditional requires</li>
+                                    <li>Typically has to be <code>if</code> statement</li>
+                                    <li>Cannot use variables, no execution</li>
+                                    <li>No ESM equivalent for sync import</li>
+                                    <li>Libraries should avoid this pattern</li>
+                                </ul>
+                                </div>
+                                <div>
+                                   <script type="code-block" data-lang="javascript" style="margin-left: 60px">
+                                        if (process.env.NODE_ENV === 'dev') {
+                                            require('lib/dev');
+                                        } else {
+                                            require('lib/prod');
+                                        }
+                                    </script>
+                                    <p style="text-align: center; margin: 30px; font-size: 28px;">Commonly used by Facebook</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="background" style="overflow: hidden;">
+                        <img src="./resources/bg5.png" style="margin-left: -325px; margin-top: -250px">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/tint.png">
+                        <img src="./resources/mask.png">
+                    </div>
+                    <div class="body">
+                        <div class="header-slide">
+                            <h1>About that bundler I wrote...</h1>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Nollup</h2>
+                            <div class="content-split">
+                                <div>
+                                    <p style="font-size: 40px; margin-top: 0">
+                                        <code style="font-size: 50px;">github.com/PepsRyuu/nollup</code>
+                                    </p>
+                                    <p style="margin: 40px 0;">
+                                        <code style="font-size: 50px;">npm install nollup</code>
+                                    </p>
+                                    <ul>
+                                        <li>Rollup compatible - reuse config</li>
+                                        <li>Hot Module Replacement</li>
+                                        <li>Quick dev bundles and rebuilds</li>
+                                        <li>Dev middleware & CLI</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <video src="./resources/nollup.mp4" style="height: 1080px; margin-top: -516px"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="light">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="hashtag"></div>
+                    <div class="body">
+                        <div class="content-slide">
+                            <h2>Conclusion</h2>
+                            <ul>
+                                <li>Understanding tools helps solve problems</li>
+                                <li>Extend the demo, experiment</li>
+                                <li>Not as complex as you think</li>
+                                <li>Don't limit yourself, challenge yourself</b></li>
+                                <li>Have fun!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section class="dark">
+                    <div class="logo"></div>
+                    <div class="logoline"></div>
+                    <div class="body">
+                        <div class="header-slide">
+                            <h1 style="max-width: 595px; margin-top: 360px; margin-left: 250px; font-size: 78px; display: inline-block; width: auto">Thanks!</h1>
+                            <div style="position: absolute; left: 100px; top: 540px; font-size: 50px">
+                                <p style="margin-bottom: 60px;">
+                                    <svg viewBox="0 0 16 16"  style="vertical-align: middle; margin-right: 40px" width="72" height="72" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C3.58 0 0 3.582 0 8c0 3.535 2.292 6.533 5.47 7.59.4.075.547-.172.547-.385 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.725-.496.056-.486.056-.486.803.056 1.225.824 1.225.824.714 1.223 1.873.87 2.33.665.072-.517.278-.87.507-1.07-1.777-.2-3.644-.888-3.644-3.953 0-.873.31-1.587.823-2.147-.083-.202-.358-1.015.077-2.117 0 0 .672-.215 2.2.82.638-.178 1.323-.266 2.003-.27.68.004 1.364.092 2.003.27 1.527-1.035 2.198-.82 2.198-.82.437 1.102.163 1.915.08 2.117.513.56.823 1.274.823 2.147 0 3.073-1.87 3.75-3.653 3.947.287.246.543.735.543 1.48 0 1.07-.01 1.933-.01 2.195 0 .215.144.463.55.385C13.71 14.53 16 11.534 16 8c0-4.418-3.582-8-8-8"  fill="white"/></svg> github.com/PepsRyuu</p>
+                                <p style="margin-bottom: 60px;">
+                                    <svg viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 40px" width="72" height="72" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" fill="white" clip-rule="evenodd"><g transform="translate(0, -3)"><path d="M2.846 6.887c.03-.295-.083-.586-.303-.784l-2.24-2.7v-.403h6.958l5.378 11.795 4.728-11.795h6.633v.403l-1.916 1.837c-.165.126-.247.333-.213.538v13.498c-.034.204.048.411.213.537l1.871 1.837v.403h-9.412v-.403l1.939-1.882c.19-.19.19-.246.19-.537v-10.91l-5.389 13.688h-.728l-6.275-13.688v9.174c-.052.385.076.774.347 1.052l2.521 3.058v.404h-7.148v-.404l2.521-3.058c.27-.279.39-.67.325-1.052v-10.608z"/></g></svg>
+                                medium.com/@PepsRyuu</p>
+                                 <p>
+                                    <svg viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 40px" width="72" height="72" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" fill="white" clip-rule="evenodd"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></svg>
+                                twitter.com/PepsRyuu</p>
+                            </div>
+                            <div style="position: absolute; left: 50%; width: 50%; top: 0; bottom: 0; background-color: var(--color-white)">
+                                <h2 style="background-color: var(--color-black); padding: 30px 60px; font-size: 78px; display: inline-block;margin-left: 220px; margin-top: 200px;">Sponsors</h2>
+                                <img style="width: 80%; margin-left: 100px;" src="./resources/sponsors.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hashtag" style="color: var(--color-black)"></div>
+                </section>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/js/reveal.js"></script>
+        <script>
+            var code_blocks = document.querySelectorAll('script[type="code-block"]');
+            [].forEach.call(code_blocks, function (el) {
+                var output = document.createElement('pre');
+                var code = document.createElement('code');
+                code.setAttribute('class', el.getAttribute('data-lang'));
+                code.textContent = el.textContent.replace(/\<\\\/script\>/g, '<\/script>');
+                code.setAttribute('style', el.getAttribute('style'));
+                output.appendChild(code);
+                el.parentNode.replaceChild(output, el);
+            });
+
+            //Just a method of trimming all of the unnecessary indentation
+            var code_blocks = document.querySelectorAll('pre code');
+            [].forEach.call(code_blocks, el => {
+                el.textContent = el.textContent.split('\n')
+                   .filter((s, i, arr) => !((i === 0 || i === arr.length - 1) && s.trim() === ''))
+                   .reduce((acc, s, i, arr) => {
+                       if (i === 0) {
+                           var match = s.match(/^(?: )+/);
+                           acc.indent = match? match[0].length : 0;   
+                       }
+
+                       acc.value.push(s.substring(acc.indent));
+                   
+                       if (i === arr.length - 1) {
+                           return acc.value.join('\n');
+                       } else {
+                           return acc;
+                       }
+                   }, {value: [], indent: 0})
+            });
+
+            Reveal.initialize({
+                width: 1920,
+                height: 1080,
+                margin: 0,
+                history: true,
+                center: false,
+                controls: false,
+                overview: false,
+                progress: false,
+                transition: 'fade', 
+                transitionSpeed: 'default',
+                dependencies: [
+                    { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/notes/notes.js', async: true },
+                    { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                ]
+            });
+
+            let slides = document.querySelector('.slides');
+            function setupSlide (e) {
+                let video = e.currentSlide.querySelector('video');
+                if (video) {
+                    video.play();
+                }
+
+                if (e.currentSlide.classList.contains('dark')) {
+                    slides.style.backgroundColor = 'var(--color-black)';
+                } else {
+                    slides.style.backgroundColor = 'var(--color-white)';
+                }
+            }
+
+            Reveal.addEventListener('slidechanged', setupSlide);
+
+            setupSlide({
+                currentSlide: Reveal.getCurrentSlide()
+            })
+        </script>
+    </body>
+</html>
